@@ -7,7 +7,6 @@
 
 #ifndef BIGINT_H_
 #define BIGINT_H_
-#include <cstdint>
 
 namespace Graham {
 class BigInt {

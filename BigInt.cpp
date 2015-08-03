@@ -9,7 +9,6 @@
 #include <iostream>
 #include <string.h>
 #include <tgmath.h>
-#include <cstdint>
 
 namespace Graham {
 
@@ -126,7 +125,7 @@ void BigInt::base2ToBase32Bit() {
 	//if length of the number is smaller than 2^32, it will always be only 1 'digit'
 	if (lengthBase2 < LENGTHBIT32 - 1) {
 		long long multiplier = 1; //multiply by 10 for each step
-		for (int i = 0; i = lengthBase2; i++) {
+		for (int i = 0; i < lengthBase2; i++) {
 			this->numberBase32Bit[0] += this->numberBase2[i] * multiplier;
 			multiplier *= 10;
 			lengthBase32Bit = 1;
@@ -142,13 +141,22 @@ void BigInt::base2ToBase32Bit() {
 	//long long division of numberBase2
 	while (lengthBase2 - whileCounter >= 0) {
 		//form number in int
-		while (dividend < BIT32) {
+		while (dividend < BIT32 && lengthBase2 >= whileCounter) {
 			dividend *= 10;
 			dividend += numberBase2[lengthBase2 - whileCounter];
+			whileCounter++;
 		}
 		quotient[quotientCounter] = dividend / BIT32;
+
+		//if not zero make sure it'll enter the loop
+		//else save the dividend, because this is the last value
 		if (quotient[quotientCounter] != 0) {
 			quotientIsZero = false;
+		} else {
+
+			numberBase32Bit[number32bitcounter] += dividend;
+			lengthBase32Bit = number32bitcounter + 1;
+			return;
 		}
 		quotientCounter++;
 		dividend = dividend % BIT32;
@@ -156,7 +164,7 @@ void BigInt::base2ToBase32Bit() {
 	//form the quotient in base10 form for saving in number32bit array
 	multiplier = pow10(quotientCounter - 1);
 	quotientLength = quotientCounter + 1;
-	while (quotientCounter >= 0) {
+	while (quotientCounter > 0) {
 		quotientCounter--;
 		numberBase32Bit[number32bitcounter] += quotient[quotientCounter]
 				* multiplier;
@@ -174,6 +182,7 @@ void BigInt::base2ToBase32Bit() {
 			while (dividend < BIT32) {
 				dividend *= 10;
 				dividend += quotient[whileCounter];
+				whileCounter++;
 			}
 			quotient[quotientCounter] = dividend / BIT32;
 			if (quotient[quotientCounter] != 0) {
@@ -188,6 +197,7 @@ void BigInt::base2ToBase32Bit() {
 			numberBase32Bit[number32bitcounter] += quotient[quotientCounter]
 					* multiplier;
 			multiplier /= 10;
+			lengthBase32Bit = number32bitcounter + 1;
 		}
 		number32bitcounter++;
 	}

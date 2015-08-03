@@ -24,13 +24,18 @@
 int main() {
 	//Graham::BigInt* a = new Graham::BigInt("1236");
 	//Graham::BigInt* b = new Graham::BigInt("1111");
+	Graham::BigInt a;
+	a.init("123");
 	Graham::BigInt z;
-	z.init("123456789");
+	z.init("4294967299");
 	Graham::BigInt y;
 	y.init("111111111");
 	Graham::BigInt x;
 	x = y + z;
 	x.print();
+	a.print();
+	z.print();
+	y.print();
 	//Graham::BigInt* c = a + b;
 	return 0;
 }
