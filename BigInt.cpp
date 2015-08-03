@@ -8,6 +8,8 @@
 #include "BigInt.h"
 #include <iostream>
 #include <string.h>
+#include <tgmath.h>
+#include <cstdint>
 
 namespace Graham {
 
@@ -26,7 +28,7 @@ BigInt::BigInt(char* str) {
 		std::cout << str[i];
 		numberBase2[i] = str[i];
 	}
-	this->length = length;
+	this->lengthBase2 = length;
 	//std::cout << "\n";
 }
 
@@ -39,15 +41,14 @@ BigInt BigInt::operator+(const BigInt& b) {
 	//this->print();
 	//c.print();
 	//b.print();
-	for (int i = 0; i < this->length; i++) {
+	for (int i = 0; i < this->lengthBase2; i++) {
 		c.numberBase2[i] = this->numberBase2[i] + b.numberBase2[i];
 		//std::cout << this->number[i] << " - " << b.number[i] << "\n";
 	}
 	//not true, but for testing purposes
-	c.length = this->length;
+	c.lengthBase2 = this->lengthBase2;
 	return c;
 }
-
 
 void BigInt::init(char* str) {
 	int length = strlen(str);
@@ -58,15 +59,23 @@ void BigInt::init(char* str) {
 		//std::cout << str[i];
 		// - 0 because otherwise it will store the ASCII value
 		//by subtracting the ASCII of '0' it'll store the real int value
-		this->numberBase2[i] = str[length-1-i] - '0';
+		this->numberBase2[i] = str[length - 1 - i] - '0';
 	}
-	this->length = length;
+	this->lengthBase2 = length;
 	//std::cout << "\n";
+	base2ToBase32Bit();
 }
 
 void BigInt::print() {
-	for (int i = 0; i < this->length; i++) {
-		std::cout << this->numberBase2[i] << "-";
+	std::cout << "Base10 : ";
+	for (int i = 0; i < this->lengthBase2; i++) {
+		std::cout << this->numberBase2[i] << " ";
+	}
+	std::cout << "\n";
+
+	std::cout << "Base32Bit : ";
+	for (int i = 0; i < this->lengthBase32Bit; i++) {
+		std::cout << this->numberBase32Bit[i] << " ";
 	}
 	std::cout << "\n";
 }
@@ -84,7 +93,8 @@ int BigInt::isDivisibleBy4() {
 }
 
 int BigInt::isDivisibleBy5() {
-	return (this->numberBase2[0] == 0 || this->numberBase2[0] == 5 ? true : false);
+	return (this->numberBase2[0] == 0 || this->numberBase2[0] == 5 ?
+			true : false);
 }
 
 int BigInt::isDivisibleBy6() {
@@ -108,11 +118,79 @@ int BigInt::isDivisibleBy10() {
 }
 
 void BigInt::base2ToBase32Bit() {
-	for(int i = 0; i < this->length; i++) {
+	long long quotient[150] = { }; //initial value is 0, most significant bit is 0.
+	int quotientCounter = 0; //keep track of the spot in the quotient, change in pointer?
+	bool quotientIsZero = true;
+	int number32bitcounter = 0; // keep track of where we are in the 32bitnumber array, change in pointer?
 
+	//if length of the number is smaller than 2^32, it will always be only 1 'digit'
+	if (lengthBase2 < LENGTHBIT32 - 1) {
+		long long multiplier = 1; //multiply by 10 for each step
+		for (int i = 0; i = lengthBase2; i++) {
+			this->numberBase32Bit[0] += this->numberBase2[i] * multiplier;
+			multiplier *= 10;
+			lengthBase32Bit = 1;
+		}
+		return;
+	}
+	//initial division
+	long long dividend = 0;
+	long long multiplier = 1;
+	int quotientLength = 0; //length of the quotient
+	int whileCounter = 1; //needed to check where we are in the array, change in pointer?
+
+	//long long division of numberBase2
+	while (lengthBase2 - whileCounter >= 0) {
+		//form number in int
+		while (dividend < BIT32) {
+			dividend *= 10;
+			dividend += numberBase2[lengthBase2 - whileCounter];
+		}
+		quotient[quotientCounter] = dividend / BIT32;
+		if (quotient[quotientCounter] != 0) {
+			quotientIsZero = false;
+		}
+		quotientCounter++;
+		dividend = dividend % BIT32;
+	}
+	//form the quotient in base10 form for saving in number32bit array
+	multiplier = pow10(quotientCounter - 1);
+	quotientLength = quotientCounter + 1;
+	while (quotientCounter >= 0) {
+		quotientCounter--;
+		numberBase32Bit[number32bitcounter] += quotient[quotientCounter]
+				* multiplier;
+		multiplier /= 10;
+	}
+	number32bitcounter++;
+
+	//loop for next divisions
+	while (quotientIsZero != true) {
+		quotientIsZero = true;
+		whileCounter = 0;
+		multiplier = 1;
+		dividend = 0;
+		while (whileCounter < quotientLength) {
+			while (dividend < BIT32) {
+				dividend *= 10;
+				dividend += quotient[whileCounter];
+			}
+			quotient[quotientCounter] = dividend / BIT32;
+			if (quotient[quotientCounter] != 0) {
+				quotientIsZero = false;
+			}
+			quotientCounter++;
+		}
+		//form the quotient in base10 form for saving in number32bit array
+		multiplier = pow10(quotientCounter - 1);
+		while (quotientCounter >= 0) {
+			quotientCounter--;
+			numberBase32Bit[number32bitcounter] += quotient[quotientCounter]
+					* multiplier;
+			multiplier /= 10;
+		}
+		number32bitcounter++;
 	}
 }
-
-
 
 } // END NAMESPACE GRAHAM
