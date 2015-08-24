@@ -25,9 +25,9 @@ BigInt::BigInt(char* str) {
 	}
 	for (int i = 0; i < length; i++) {
 		std::cout << str[i];
-		numberBase2[i] = str[i];
+		numberBase10[i] = str[i];
 	}
-	this->lengthBase2 = length;
+	this->lengthBase10 = length;
 	//std::cout << "\n";
 }
 
@@ -40,12 +40,22 @@ BigInt BigInt::operator+(const BigInt& b) {
 	//this->print();
 	//c.print();
 	//b.print();
-	for (int i = 0; i < this->lengthBase2; i++) {
-		c.numberBase2[i] = this->numberBase2[i] + b.numberBase2[i];
+	for (int i = 0; i < this->lengthBase10; i++) {
+		c.numberBase10[i] = this->numberBase10[i] + b.numberBase10[i];
+		if(i+1 < MAXLENGTH -1) {
+			c.numberBase10[i+1] = c.numberBase10[i] / 10;
+			c.numberBase10[i] = c.numberBase10[i] % 10;
+		}
 		//std::cout << this->number[i] << " - " << b.number[i] << "\n";
 	}
 	//not true, but for testing purposes
-	c.lengthBase2 = this->lengthBase2;
+	for (int i = MAXLENGTH - 1; i > 0 ; i++) {
+		if(c.numberBase10[i] != 0) {
+			c.lengthBase10 = i+1;
+			return c;
+		}
+	}
+
 	return c;
 }
 
@@ -58,29 +68,28 @@ void BigInt::init(char* str) {
 		//std::cout << str[i];
 		// - 0 because otherwise it will store the ASCII value
 		//by subtracting the ASCII of '0' it'll store the real int value
-		this->numberBase2[i] = str[length - 1 - i] - '0';
+		this->numberBase10[i] = str[length - 1 - i] - '0';
 	}
-	this->lengthBase2 = length;
+	this->lengthBase10 = length;
 	//std::cout << "\n";
-	base2ToBase32Bit();
 }
 
 void BigInt::print() {
 	std::cout << "Base10 : ";
-	for (int i = 0; i < this->lengthBase2; i++) {
-		std::cout << this->numberBase2[i] << " ";
+	for (int i = 0; i < this->lengthBase10; i++) {
+		std::cout << this->numberBase10[i] << " ";
 	}
 	std::cout << "\n";
 
-	std::cout << "Base32Bit : ";
+	/*std::cout << "Base32Bit : ";
 	for (int i = 0; i < this->lengthBase32Bit; i++) {
 		std::cout << this->numberBase32Bit[i] << " ";
 	}
-	std::cout << "\n";
+	std::cout << "\n";*/
 }
 
 int BigInt::isDivisibleBy2() {
-	return (this->numberBase2[0] % 2 == 0 ? true : false);
+	return (this->numberBase10[0] % 2 == 0 ? true : false);
 }
 
 int BigInt::isDivisibleBy3() {
@@ -92,7 +101,7 @@ int BigInt::isDivisibleBy4() {
 }
 
 int BigInt::isDivisibleBy5() {
-	return (this->numberBase2[0] == 0 || this->numberBase2[0] == 5 ?
+	return (this->numberBase10[0] == 0 || this->numberBase10[0] == 5 ?
 			true : false);
 }
 
@@ -113,10 +122,11 @@ int BigInt::isDivisibleBy9() {
 }
 
 int BigInt::isDivisibleBy10() {
-	return (this->numberBase2[0] == 0 ? true : false);
+	return (this->numberBase10[0] == 0 ? true : false);
 }
 
-void BigInt::base2ToBase32Bit() {
+//Probably buggy, focussing on base 2 first
+/*void BigInt::base2ToBase32Bit() {
 	long long quotient[150] = { }; //initial value is 0, most significant bit is 0.
 	int quotientCounter = 0; //keep track of the spot in the quotient, change in pointer?
 	bool quotientIsZero = true;
@@ -201,6 +211,6 @@ void BigInt::base2ToBase32Bit() {
 		}
 		number32bitcounter++;
 	}
-}
+}*/
 
 } // END NAMESPACE GRAHAM

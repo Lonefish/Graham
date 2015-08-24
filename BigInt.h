@@ -13,10 +13,11 @@ class BigInt {
 public:
 	//start to implement algorithms with fixed maximum size of 32^100. Array in base 32.
 	//0 is least significant bit
-	long long numberBase32Bit[100] = {};
-	long long numberBase2[150] = {};
-	int lengthBase2 = 0;
-	int lengthBase32Bit = 0;
+	//long long numberBase32Bit[100] = {};
+	int MAXLENGTH = 150;
+	long long numberBase10[150] = {};
+	int lengthBase10 = 0;
+	//int lengthBase32Bit = 0;
 	BigInt(char* str);
 	BigInt();
 	void init(char* str);
@@ -33,9 +34,9 @@ public:
 	int isDivisibleBy9();
 	int isDivisibleBy10();
 private:
-	long long BIT32 = 4294967296; //Make const
-	long long LENGTHBIT32 = 10; //make const
-	void base2ToBase32Bit();
+	//long long BIT32 = 4294967296; //Make const
+	//long long LENGTHBIT32 = 10; //make const
+	//void base2ToBase32Bit();
 };
 
 

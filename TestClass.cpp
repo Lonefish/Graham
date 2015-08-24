@@ -22,6 +22,7 @@
 
 
 int main() {
+	std::cout << "test\n";
 	//Graham::BigInt* a = new Graham::BigInt("1236");
 	//Graham::BigInt* b = new Graham::BigInt("1111");
 	Graham::BigInt a;
@@ -36,7 +37,6 @@ int main() {
 	a.print();
 	z.print();
 	y.print();
-	//Graham::BigInt* c = a + b;
 	return 0;
 }
 
