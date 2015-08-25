@@ -22,7 +22,9 @@ public:
 	BigInt();
 	void init(char* str);
 	void print();
+	void add(const BigInt& b);
 	virtual ~BigInt();
+	BigInt operator*(const BigInt& b);
 	BigInt operator+(const BigInt& b);
 	int isDivisibleBy2();
 	int isDivisibleBy3();

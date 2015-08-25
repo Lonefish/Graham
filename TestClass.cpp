@@ -22,22 +22,22 @@
 
 
 int main() {
-	std::cout << "test\n";
 	//Graham::BigInt* a = new Graham::BigInt("1236");
 	//Graham::BigInt* b = new Graham::BigInt("1111");
-	Graham::BigInt a;
-	a.init("123");
+
 	Graham::BigInt z;
-	z.init("4294967299");
+	z.init("99999");
 	Graham::BigInt y;
-	y.init("111111111");
+	y.init("111");
 	Graham::BigInt x;
-	x = y + z;
-	x.print();
-	a.print();
+
+	y.add(z);
+
 	z.print();
 	y.print();
+
 	return 0;
+
 }
 
 TestClass::TestClass() {
