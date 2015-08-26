@@ -21,6 +21,7 @@ public:
 	BigInt(char* str);
 	BigInt();
 	void init(char* str);
+	void copy(BigInt b);
 	void print(char* str);
 	void add(const BigInt& b);
 	void multiply(const BigInt& b);

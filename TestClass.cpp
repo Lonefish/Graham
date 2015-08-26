@@ -34,7 +34,7 @@ int main() {
 
 
 	y.print("y");
-	y.add(z);
+	y.multiply(z);
 	z.print("z");
 	y.print("y");
 

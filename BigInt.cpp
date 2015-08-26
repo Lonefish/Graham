@@ -37,12 +37,9 @@ BigInt::~BigInt() {
 
 BigInt BigInt::operator+(const BigInt& b) {
 	BigInt c;
-	//this->print();
-	//c.print();
-	//b.print();
 	for (int i = 0; i < this->lengthBase10; i++) {
 		c.numberBase10[i] = this->numberBase10[i] + b.numberBase10[i];
-		if(i+1 < MAXLENGTH -1) {
+		if(i < MAXLENGTH) {
 			c.numberBase10[i+1] = c.numberBase10[i] / 10;
 			c.numberBase10[i] = c.numberBase10[i] % 10;
 		}
@@ -63,7 +60,7 @@ void BigInt::add(const BigInt& b) {
 	int length = (this->lengthBase10 > b.lengthBase10 ? this->lengthBase10 : b.lengthBase10);
 	for (int i = 0; i < length; i++) {
 		this->numberBase10[i] = this->numberBase10[i] + b.numberBase10[i];
-		if(i+1 < MAXLENGTH -1) {
+		if(i < MAXLENGTH) {
 			this->numberBase10[i+1] += this->numberBase10[i] / 10;
 			this->numberBase10[i] = this->numberBase10[i] % 10;
 		}
@@ -80,26 +77,43 @@ void BigInt::add(const BigInt& b) {
 
 //Multiplying algorithm
 void BigInt::multiply(const BigInt& b) {
-	int length = (this->lengthBase10 > b.lengthBase10 ? this->lengthBase10 : b.lengthBase10);
-	for (int i = 0; i < length; i++) {
-		this->numberBase10[i] = this->numberBase10[i] + b.numberBase10[i];
-		if(i+1 < MAXLENGTH -1) {
-			//std::cout << this->numberBase10[i];
-			this->numberBase10[i+1] += this->numberBase10[i] / 10;
-			//std::cout << this->numberBase10[i] / 10 << "\n";
-			this->numberBase10[i] = this->numberBase10[i] % 10;
+	BigInt temp;
+	//int length = (this->lengthBase10 > b.lengthBase10 ? this->lengthBase10 : b.lengthBase10);
+	for (int i = 0; i < this->lengthBase10; i++) {
+		for (int j = 0; j < b.lengthBase10; j++) {
+			temp.numberBase10[j+i] += this->numberBase10[i] * b.numberBase10[j];
 		}
-		//std::cout << this->number[i] << " - " << b.number[i] << "\n";
+	}
+
+	for (int i = 0; i < MAXLENGTH; i++) {
+		if(i < MAXLENGTH) {
+			temp.numberBase10[i+1] += temp.numberBase10[i] / 10;
+			temp.numberBase10[i] = temp.numberBase10[i] % 10;
+		}
 	}
 
 	//check the new length
 	for (int i = MAXLENGTH-1; i > 0 ; i--) {
-		if(this->numberBase10[i] != 0) {
-			this->lengthBase10 = i+1;
+		if(temp.numberBase10[i] != 0) {
+			temp.lengthBase10 = i+1;
+			this->copy(temp);
 			return;
 		}
 	}
 
+}
+
+
+/*
+ * Initialize the value in base 10. Saved in an array of length 150
+ * This can and will be optimized, but for testing and developing purposes
+ * base 10 is easier to work with for the basic algorithms.
+ */
+void BigInt::copy(BigInt b) {
+	for (int i = 0; i < MAXLENGTH; i++) {
+		this->numberBase10[i] = b.numberBase10[i];
+	}
+	this->lengthBase10 = b.lengthBase10;
 }
 
 /*
@@ -113,10 +127,6 @@ void BigInt::init(char* str) {
 		throw "Value is too large. Maximum value is 32^100 \n";
 	}
 
-	for (int i = 0; i < MAXLENGTH; i++) {
-		numberBase10[i] = 0;
-	}
-	//std::cout << numberBase10[149];
 	for (int i = 0; i < length; i++) {
 		//check whether it's a number or not
 		int asci = str[i];
