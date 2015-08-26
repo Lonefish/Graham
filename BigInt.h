@@ -25,6 +25,8 @@ public:
 	void print(char* str);
 	void add(const BigInt& b);
 	void multiply(const BigInt& b);
+	void divide(const BigInt& b);
+	int compare(const BigInt& b);
 	virtual ~BigInt();
 	BigInt operator*(const BigInt& b);
 	BigInt operator+(const BigInt& b);

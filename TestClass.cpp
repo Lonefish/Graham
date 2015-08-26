@@ -29,10 +29,10 @@ int main() {
 	z.init("99999");
 	//std::cout << "test";
 	Graham::BigInt y;
-	y.init("111");
-	Graham::BigInt x;
+	y.init("99998");
+	//Graham::BigInt x;
 
-
+	std::cout << y.compare(z);
 	y.print("y");
 	y.multiply(z);
 	z.print("z");

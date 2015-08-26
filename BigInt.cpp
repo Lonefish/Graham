@@ -100,7 +100,38 @@ void BigInt::multiply(const BigInt& b) {
 			return;
 		}
 	}
+}
 
+//Division algorithm
+void BigInt::divide(const BigInt& b) {
+	//To add
+}
+
+/*
+ * Comparing algorithm
+ * Returns 0 if they are equal
+ * Returns 1 if the object on which the function is called is bigger
+ * Returns 2 if the parameter object is bigger
+ */
+int BigInt::compare(const BigInt& b) {
+	if(this->lengthBase10 > b.lengthBase10) {
+		return 1;
+	} else if (this->lengthBase10 < b.lengthBase10){
+		return 2;
+	} else {
+		//Starting a loop from the most significant digit.
+		//The length of "this" can be used because both lengths
+		//are equal at this stage
+		for(int i = this->lengthBase10; i >= 0; i--) {
+			if(this->numberBase10[i] > b.numberBase10[i]) {
+				return 1;
+			} else if (this->numberBase10[i] < b.numberBase10[i]){
+				return 2;
+			}
+		}
+	}
+	//if the function reaches this point both are equal
+	return 0;
 }
 
 
