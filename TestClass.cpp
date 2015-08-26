@@ -24,17 +24,20 @@
 int main() {
 	//Graham::BigInt* a = new Graham::BigInt("1236");
 	//Graham::BigInt* b = new Graham::BigInt("1111");
-
+	//std::cout << "test";
 	Graham::BigInt z;
 	z.init("99999");
+	//std::cout << "test";
 	Graham::BigInt y;
 	y.init("111");
 	Graham::BigInt x;
 
-	y.add(z);
 
-	z.print();
-	y.print();
+	y.print("y");
+	y.add(z);
+	z.print("z");
+	y.print("y");
+
 
 	return 0;
 

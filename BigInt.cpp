@@ -35,29 +35,6 @@ BigInt::~BigInt() {
 	// TODO Auto-generated destructor stub
 }
 
-BigInt BigInt::operator*(const BigInt& b) {
-	BigInt c;
-	//this->print();
-	//c.print();
-	//b.print();
-	for (int i = 0; i < this->lengthBase10; i++) {
-		c.numberBase10[i] = this->numberBase10[i] + b.numberBase10[i];
-		if(i+1 < MAXLENGTH -1) {
-			c.numberBase10[i+1] = c.numberBase10[i] / 10;
-			c.numberBase10[i] = c.numberBase10[i] % 10;
-		}
-		//std::cout << this->number[i] << " - " << b.number[i] << "\n";
-	}
-	//not true, but for testing purposes
-	for (int i = MAXLENGTH - 1; i > 0 ; i++) {
-		if(c.numberBase10[i] != 0) {
-			c.lengthBase10 = i+1;
-			return c;
-		}
-	}
-	return c;
-}
-
 BigInt BigInt::operator+(const BigInt& b) {
 	BigInt c;
 	//this->print();
@@ -84,7 +61,26 @@ BigInt BigInt::operator+(const BigInt& b) {
 //haven't figured the operator overloading out, so returning to what I know to check/optimize the algorithm
 void BigInt::add(const BigInt& b) {
 	int length = (this->lengthBase10 > b.lengthBase10 ? this->lengthBase10 : b.lengthBase10);
-	std::cout << length;
+	for (int i = 0; i < length; i++) {
+		this->numberBase10[i] = this->numberBase10[i] + b.numberBase10[i];
+		if(i+1 < MAXLENGTH -1) {
+			this->numberBase10[i+1] += this->numberBase10[i] / 10;
+			this->numberBase10[i] = this->numberBase10[i] % 10;
+		}
+	}
+
+	//Check the new length of the number
+	for (int i = MAXLENGTH-1; i > 0 ; i--) {
+		if(this->numberBase10[i] != 0) {
+			this->lengthBase10 = i+1;
+			return;
+		}
+	}
+}
+
+//Multiplying algorithm
+void BigInt::multiply(const BigInt& b) {
+	int length = (this->lengthBase10 > b.lengthBase10 ? this->lengthBase10 : b.lengthBase10);
 	for (int i = 0; i < length; i++) {
 		this->numberBase10[i] = this->numberBase10[i] + b.numberBase10[i];
 		if(i+1 < MAXLENGTH -1) {
@@ -96,12 +92,14 @@ void BigInt::add(const BigInt& b) {
 		//std::cout << this->number[i] << " - " << b.number[i] << "\n";
 	}
 
-	for (int i = MAXLENGTH; i > 0 ; i--) {
+	//check the new length
+	for (int i = MAXLENGTH-1; i > 0 ; i--) {
 		if(this->numberBase10[i] != 0) {
-			this->lengthBase10 = i+2;
+			this->lengthBase10 = i+1;
 			return;
 		}
 	}
+
 }
 
 /*
@@ -114,6 +112,11 @@ void BigInt::init(char* str) {
 	if (strlen(str) > 150) {
 		throw "Value is too large. Maximum value is 32^100 \n";
 	}
+
+	for (int i = 0; i < MAXLENGTH; i++) {
+		numberBase10[i] = 0;
+	}
+	//std::cout << numberBase10[149];
 	for (int i = 0; i < length; i++) {
 		//check whether it's a number or not
 		int asci = str[i];
@@ -127,8 +130,8 @@ void BigInt::init(char* str) {
 	this->lengthBase10 = length;
 }
 
-void BigInt::print() {
-	std::cout << "Base10 : ";
+void BigInt::print(char* str) {
+	std::cout << str << " in base10 : ";
 	for (int i = this->lengthBase10 - 1; i >= 0; i--) {
 		std::cout << this->numberBase10[i] << "";
 	}
