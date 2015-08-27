@@ -75,6 +75,37 @@ void BigInt::add(const BigInt& b) {
 	}
 }
 
+void BigInt::subtract(const BigInt& b) {
+	int compare = this->compare(b);
+
+	/*
+	 * If the number to subtract is bigger, throw an error.
+	 * If the number is equal, the result will be 0, so reset 'this' and return
+	 */
+	if(compare == 2) {
+		throw "Number to subtract is too big. BigInt is not built for negative numbers";
+	} else if (compare == 0) {
+		this->init("0");
+		return;
+	}
+
+	for (int i = 0; i < this->lengthBase10; i++) {
+		if(this->numberBase10[i] < b.numberBase10[i]) {
+			this->numberBase10[i+1] -= 1;
+			this->numberBase10[i] += 10;
+		}
+		this->numberBase10[i] -= b.numberBase10[i];
+	}
+
+	//Check the new length of the number
+	for (int i = MAXLENGTH-1; i > 0 ; i--) {
+		if(this->numberBase10[i] != 0) {
+			this->lengthBase10 = i+1;
+			return;
+		}
+	}
+}
+
 //Multiplying algorithm
 void BigInt::multiply(const BigInt& b) {
 	BigInt temp;
@@ -102,10 +133,52 @@ void BigInt::multiply(const BigInt& b) {
 	}
 }
 
-//Division algorithm
+/*
+ * Method to shift the complete number 1 position to the more significant side.
+ * 999 becomes 9990
+ *
+ * Addition is the number that is put in the space that frees up at the end of the number
+ * This number will be done modulo the base.
+ */
+void BigInt::shiftMoreSignificant(int addition) {
+	addition %= 10;
+	for(int i = MAXLENGTH -1; i > 0; i--) {
+		this->numberBase10[i] = this->numberBase10[i-1];
+	}
+	this->numberBase10[0] = addition;
+	this->lengthBase10++;
+}
+
+/*
+ * Division algorithm
+ * Divide 'this' by 'b'
+ */
 void BigInt::divide(const BigInt& b) {
 	//To add
+	BigInt temp;
+	BigInt result;
+	int counterResult = 0;
+	int counterThis = this->lengthBase10 - 1;
+	temp.numberBase10[0] = this->numberBase10[counterThis];
+	temp.lengthBase10 = 1;
+	counterThis--;
+	while(temp.compare(b) == 2) {
+		temp.shiftMoreSignificant(this->numberBase10[counterThis]);
+		counterThis--;
+	}
+	temp.print("Temp");
+
+	//while(temp.compare(b) == 1) {
+		temp.subtract(b);
+		temp.print("Temp subtract");
+		result.numberBase10[counterResult]++;
+		result.lengthBase10++;
+	//}
+
+	result.print("result");
 }
+
+
 
 /*
  * Comparing algorithm

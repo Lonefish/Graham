@@ -26,19 +26,17 @@ int main() {
 	//Graham::BigInt* b = new Graham::BigInt("1111");
 	//std::cout << "test";
 	Graham::BigInt z;
-	z.init("99999");
+	z.init("9");
 	//std::cout << "test";
 	Graham::BigInt y;
-	y.init("99998");
+	y.init("10");
 	//Graham::BigInt x;
-
-	std::cout << y.compare(z);
+	//y.shiftMoreSignificant(5);
+	//std::cout << y.compare(z);
 	y.print("y");
-	y.multiply(z);
+	y.subtract(z);
 	z.print("z");
 	y.print("y");
-
-
 	return 0;
 
 }

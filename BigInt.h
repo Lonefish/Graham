@@ -24,6 +24,8 @@ public:
 	void copy(BigInt b);
 	void print(char* str);
 	void add(const BigInt& b);
+	void subtract(const BigInt& b);
+	void shiftMoreSignificant(int addition);
 	void multiply(const BigInt& b);
 	void divide(const BigInt& b);
 	int compare(const BigInt& b);
