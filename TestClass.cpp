@@ -29,12 +29,12 @@ int main() {
 	z.init("9");
 	//std::cout << "test";
 	Graham::BigInt y;
-	y.init("10");
+	y.init("10000");
 	//Graham::BigInt x;
 	//y.shiftMoreSignificant(5);
 	//std::cout << y.compare(z);
 	y.print("y");
-	y.subtract(z);
+	y.divide(z);
 	z.print("z");
 	y.print("y");
 	return 0;

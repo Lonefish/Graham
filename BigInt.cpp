@@ -17,12 +17,15 @@ BigInt::BigInt() {
 
 }
 
+//deprecated
 BigInt::BigInt(char* str) {
 	// TODO Auto-generated constructor stub
 	int length = strlen(str);
-	if (strlen(str) > 150) {
+	//if the length is bigger than the maximum length, throw error
+	if (strlen(str) > MAXLENGTH) {
 		throw "Value is too large. Maximum value is 32^100 \n";
 	}
+	//Save all digits in array
 	for (int i = 0; i < length; i++) {
 		std::cout << str[i];
 		numberBase10[i] = str[i];
@@ -35,6 +38,9 @@ BigInt::~BigInt() {
 	// TODO Auto-generated destructor stub
 }
 
+/*
+ * Deprecated, updated function is add.
+ */
 BigInt BigInt::operator+(const BigInt& b) {
 	BigInt c;
 	for (int i = 0; i < this->lengthBase10; i++) {
@@ -45,19 +51,20 @@ BigInt BigInt::operator+(const BigInt& b) {
 		}
 		//std::cout << this->number[i] << " - " << b.number[i] << "\n";
 	}
-	//not true, but for testing purposes
-	for (int i = MAXLENGTH - 1; i > 0 ; i++) {
-		if(c.numberBase10[i] != 0) {
-			c.lengthBase10 = i+1;
-			return c;
-		}
-	}
+
+	c.checkLength();
 	return c;
 }
 
 //haven't figured the operator overloading out, so returning to what I know to check/optimize the algorithm
+/*
+ * Adds 2 Bigintegers together
+ */
 void BigInt::add(const BigInt& b) {
+	//Check which number is the biggest, length of the loop based on the outcome
 	int length = (this->lengthBase10 > b.lengthBase10 ? this->lengthBase10 : b.lengthBase10);
+	//for each digit, add the corresponding significant digit to the digit,
+	//if it's bigger than 10, add to the more significant digit and do modulo 10
 	for (int i = 0; i < length; i++) {
 		this->numberBase10[i] = this->numberBase10[i] + b.numberBase10[i];
 		if(i < MAXLENGTH) {
@@ -66,15 +73,12 @@ void BigInt::add(const BigInt& b) {
 		}
 	}
 
-	//Check the new length of the number
-	for (int i = MAXLENGTH-1; i > 0 ; i--) {
-		if(this->numberBase10[i] != 0) {
-			this->lengthBase10 = i+1;
-			return;
-		}
-	}
+	checkLength();
 }
 
+/*
+ * Method to subtract 2 bigintegers
+ */
 void BigInt::subtract(const BigInt& b) {
 	int compare = this->compare(b);
 
@@ -89,6 +93,10 @@ void BigInt::subtract(const BigInt& b) {
 		return;
 	}
 
+	/*
+	 * Starting from the least significant digit, subtract each digit from it's corresponding significant digit
+	 * subtracting digit is bigger than the current digit, lend 10 from the more significant digit.
+	 */
 	for (int i = 0; i < this->lengthBase10; i++) {
 		if(this->numberBase10[i] < b.numberBase10[i]) {
 			this->numberBase10[i+1] -= 1;
@@ -97,25 +105,26 @@ void BigInt::subtract(const BigInt& b) {
 		this->numberBase10[i] -= b.numberBase10[i];
 	}
 
-	//Check the new length of the number
-	for (int i = MAXLENGTH-1; i > 0 ; i--) {
-		if(this->numberBase10[i] != 0) {
-			this->lengthBase10 = i+1;
-			return;
-		}
-	}
+	checkLength();
 }
 
 //Multiplying algorithm
 void BigInt::multiply(const BigInt& b) {
 	BigInt temp;
 	//int length = (this->lengthBase10 > b.lengthBase10 ? this->lengthBase10 : b.lengthBase10);
+
+	/*
+	 *Double loop that multiplies each digit with eachother and saves the result in an array
+	 */
 	for (int i = 0; i < this->lengthBase10; i++) {
 		for (int j = 0; j < b.lengthBase10; j++) {
 			temp.numberBase10[j+i] += this->numberBase10[i] * b.numberBase10[j];
 		}
 	}
 
+	/*
+	 * Normalises the array to base 10
+	 */
 	for (int i = 0; i < MAXLENGTH; i++) {
 		if(i < MAXLENGTH) {
 			temp.numberBase10[i+1] += temp.numberBase10[i] / 10;
@@ -123,14 +132,7 @@ void BigInt::multiply(const BigInt& b) {
 		}
 	}
 
-	//check the new length
-	for (int i = MAXLENGTH-1; i > 0 ; i--) {
-		if(temp.numberBase10[i] != 0) {
-			temp.lengthBase10 = i+1;
-			this->copy(temp);
-			return;
-		}
-	}
+	checkLength();
 }
 
 /*
@@ -149,14 +151,27 @@ void BigInt::shiftMoreSignificant(int addition) {
 	this->lengthBase10++;
 }
 
+void BigInt::checkLength() {
+	//Check the new length of the number
+	for (int i = MAXLENGTH-1; i >= 0 ; i--) {
+		if(this->numberBase10[i] != 0) {
+			this->lengthBase10 = i+1;
+			return;
+		}
+	}
+}
+
+
+
 /*
  * Division algorithm
  * Divide 'this' by 'b'
  */
 void BigInt::divide(const BigInt& b) {
-	//To add
-	BigInt temp;
-	BigInt result;
+	//Add compare function as in multiply
+
+	BigInt temp; //Contains the smallest number divisible by divisor
+	BigInt result; //Contains the result in opposite direction. Most significant digit = 0;
 	int counterResult = 0;
 	int counterThis = this->lengthBase10 - 1;
 	temp.numberBase10[0] = this->numberBase10[counterThis];
@@ -166,16 +181,26 @@ void BigInt::divide(const BigInt& b) {
 		temp.shiftMoreSignificant(this->numberBase10[counterThis]);
 		counterThis--;
 	}
-	temp.print("Temp");
+	//temp.print("Temp");
 
-	//while(temp.compare(b) == 1) {
+	while(counterThis >= 0) {
 		temp.subtract(b);
-		temp.print("Temp subtract");
+		//temp.print("Temp subtract");
 		result.numberBase10[counterResult]++;
 		result.lengthBase10++;
-	//}
-
-	result.print("result");
+		//result.print("result temp");
+		//std::cout << "counterThis" << counterResult << "CounterResult" << counterThis << "\n";
+		if(temp.compare(b) == 2 && counterThis == 0) {
+			result.print("result");
+			return;
+		}
+		if(temp.compare(b) == 2) {
+			temp.shiftMoreSignificant(this->numberBase10[counterThis]);
+			counterThis--;
+			counterResult++;
+		}
+	}
+	checkLength();
 }
 
 
