@@ -22,6 +22,7 @@ public:
 	BigInt();
 	void init(char* str);
 	void copy(BigInt b);
+	void copyReverse(BigInt b);
 	void print(char* str);
 	void add(const BigInt& b);
 	void subtract(const BigInt& b);

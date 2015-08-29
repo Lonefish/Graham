@@ -27,13 +27,11 @@ int main() {
 	//std::cout << "test";
 	Graham::BigInt z;
 	z.init("9");
-	//std::cout << "test";
 	Graham::BigInt y;
-	y.init("10000");
-	//Graham::BigInt x;
-	//y.shiftMoreSignificant(5);
-	//std::cout << y.compare(z);
+	y.init("1000");
+	z.print("z");
 	y.print("y");
+
 	y.divide(z);
 	z.print("z");
 	y.print("y");

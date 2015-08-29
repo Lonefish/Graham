@@ -168,39 +168,63 @@ void BigInt::checkLength() {
  * Divide 'this' by 'b'
  */
 void BigInt::divide(const BigInt& b) {
-	//Add compare function as in multiply
+	int compare = this->compare(b);
 
+	/*
+	 * If the number to divide is bigger, throw an error.
+	 * If the number is equal, the result will be 1, so set 'this' and return
+	 */
+	if(compare == 2) {
+		throw "Number to divide is too big. BigInt is not built for decimal numbers";
+	} else if (compare == 0) {
+		this->init("1");
+		return;
+	}
 	BigInt temp; //Contains the smallest number divisible by divisor
 	BigInt result; //Contains the result in opposite direction. Most significant digit = 0;
-	int counterResult = 0;
-	int counterThis = this->lengthBase10 - 1;
-	temp.numberBase10[0] = this->numberBase10[counterThis];
+	int counterResult = 0; //Contains counter for the position in the result
+	int counterThis = this->lengthBase10 - 1; //Contains counter for the position in 'this' bigint
+
+	//add first number to temp
+	temp.numberBase10[0] = this->numberBase10[counterThis];	//placeholder for the current number to divide
 	temp.lengthBase10 = 1;
 	counterThis--;
+
+	//While the divisor is bigger than temp, add numbers.
 	while(temp.compare(b) == 2) {
 		temp.shiftMoreSignificant(this->numberBase10[counterThis]);
 		counterThis--;
 	}
-	//temp.print("Temp");
 
+	/*
+	 * Until the full BigInt is added to the temp variable,
+	 * divide by subtraction.
+	 *
+	 * When temp is smaller than the divisor, add a number and
+	 * do it again.
+	 */
 	while(counterThis >= 0) {
 		temp.subtract(b);
-		//temp.print("Temp subtract");
 		result.numberBase10[counterResult]++;
 		result.lengthBase10++;
-		//result.print("result temp");
-		//std::cout << "counterThis" << counterResult << "CounterResult" << counterThis << "\n";
+		counterResult++;
+
+		//When this BigInt is empty and subtraction is at an end, break loop
 		if(temp.compare(b) == 2 && counterThis == 0) {
-			result.print("result");
-			return;
+			//result.print("result");
+			break;
 		}
 		if(temp.compare(b) == 2) {
 			temp.shiftMoreSignificant(this->numberBase10[counterThis]);
 			counterThis--;
-			counterResult++;
 		}
 	}
-	checkLength();
+	//Copy reverse of result to this and print the rest value.
+	this->copyReverse(result);
+
+	std::cout << "Division done, rest is";
+	temp.print("");
+	//checkLength();
 }
 
 
@@ -234,13 +258,21 @@ int BigInt::compare(const BigInt& b) {
 
 
 /*
- * Initialize the value in base 10. Saved in an array of length 150
- * This can and will be optimized, but for testing and developing purposes
- * base 10 is easier to work with for the basic algorithms.
+ *
  */
 void BigInt::copy(BigInt b) {
 	for (int i = 0; i < MAXLENGTH; i++) {
 		this->numberBase10[i] = b.numberBase10[i];
+	}
+	this->lengthBase10 = b.lengthBase10;
+}
+
+/*
+ *
+ */
+void BigInt::copyReverse(BigInt b) {
+	for (int i = 0; i < this->lengthBase10; i++) {
+		this->numberBase10[i] = b.numberBase10[this->lengthBase10 - 1 - i];
 	}
 	this->lengthBase10 = b.lengthBase10;
 }
