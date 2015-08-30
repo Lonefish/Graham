@@ -196,6 +196,8 @@ void BigInt::divide(const BigInt& b) {
 		counterThis--;
 	}
 
+	temp.print("Temp first");
+
 	/*
 	 * Until the full BigInt is added to the temp variable,
 	 * divide by subtraction.
@@ -209,9 +211,14 @@ void BigInt::divide(const BigInt& b) {
 		result.lengthBase10++;
 		counterResult++;
 
+		temp.print("Temp ");
+		result.print("Result ");
+		std::cout << "counterThis" << counterThis << "\n";
+
+
 		//When this BigInt is empty and subtraction is at an end, break loop
 		if(temp.compare(b) == 2 && counterThis == 0) {
-			//result.print("result");
+			result.print("result finished");
 			break;
 		}
 		if(temp.compare(b) == 2) {
@@ -219,6 +226,7 @@ void BigInt::divide(const BigInt& b) {
 			counterThis--;
 		}
 	}
+
 	//Copy reverse of result to this and print the rest value.
 	this->copyReverse(result);
 
@@ -271,7 +279,10 @@ void BigInt::copy(BigInt b) {
  *
  */
 void BigInt::copyReverse(BigInt b) {
-	for (int i = 0; i < this->lengthBase10; i++) {
+	b.print("Reverse b");
+	this->print("Reverse this");
+	this->init("0");
+	for (int i = 0; i < b.lengthBase10; i++) {
 		this->numberBase10[i] = b.numberBase10[this->lengthBase10 - 1 - i];
 	}
 	this->lengthBase10 = b.lengthBase10;

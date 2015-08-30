@@ -22,19 +22,19 @@
 
 
 int main() {
-	//Graham::BigInt* a = new Graham::BigInt("1236");
-	//Graham::BigInt* b = new Graham::BigInt("1111");
-	//std::cout << "test";
+	Stopwatch s;
+	s.startClock();
 	Graham::BigInt z;
-	z.init("9");
+	z.init("99");
 	Graham::BigInt y;
 	y.init("1000");
 	z.print("z");
 	y.print("y");
-
 	y.divide(z);
 	z.print("z");
 	y.print("y");
+	s.stopClock();
+	std::cout << "Time taken in ms :" << s.difference();
 	return 0;
 
 }
