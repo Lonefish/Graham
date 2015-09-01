@@ -21,6 +21,7 @@ public:
 	BigInt(char* str);
 	BigInt();
 	void init(char* str);
+	void resetToZero();
 	void copy(BigInt b);
 	void copyReverse(BigInt b);
 	void print(char* str);

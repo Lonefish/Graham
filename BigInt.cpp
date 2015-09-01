@@ -91,7 +91,7 @@ void BigInt::subtract(const BigInt& b) {
 	if (compare == 2) {
 		throw "Number to subtract is too big. BigInt is not built for negative numbers";
 	} else if (compare == 0) {
-		this->init("0");
+		this->resetToZero();
 		return;
 	}
 
@@ -269,16 +269,19 @@ void BigInt::divide2(const BigInt& b) {
 	while (temp.compare(b) != 2) {
 		temp.subtract(b);
 		result.numberBase10[0] += 1;
-		//std::cout << "FirstSub";
+		temp.print("Remainder first");
 	}
 	while (counterThis >= 0) {
 		result.shiftMoreSignificant(0);
 		temp.shiftMoreSignificant(this->numberBase10[counterThis]);
+		temp.print("Temp");
+		result.print("Result");
 		counterThis--;
 		while (temp.compare(b) != 2) {
 			temp.subtract(b);
 			result.numberBase10[0] += 1;
 			std::cout << counterThis;
+			temp.print(" Remainder");
 		}
 	}
 	temp.print("Remainder");
@@ -329,11 +332,23 @@ void BigInt::copy(BigInt b) {
 void BigInt::copyReverse(BigInt b) {
 	b.print("Reverse b");
 	this->print("Reverse this");
-	this->init("0");
+	this->resetToZero();
 	for (int i = 0; i < b.lengthBase10; i++) {
 		this->numberBase10[i] = b.numberBase10[this->lengthBase10 - 1 - i];
 	}
 	this->lengthBase10 = b.lengthBase10;
+}
+
+/*
+ * Initialize the value in base 10. Saved in an array of length 150
+ * This can and will be optimized, but for testing and developing purposes
+ * base 10 is easier to work with for the basic algorithms.
+ */
+void BigInt::resetToZero() {
+	int length = 0;
+	for (int i = 0; i < MAXLENGTH; i++) {
+		this->numberBase10[i] = 0;
+	}
 }
 
 /*
