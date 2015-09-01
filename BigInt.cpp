@@ -274,18 +274,18 @@ void BigInt::divide2(const BigInt& b) {
 	while (counterThis >= 0) {
 		result.shiftMoreSignificant(0);
 		temp.shiftMoreSignificant(this->numberBase10[counterThis]);
-		temp.print("Temp");
-		result.print("Result");
+		//temp.print("Temp");
+		//result.print("Result");
 		counterThis--;
 		while (temp.compare(b) != 2) {
 			temp.subtract(b);
-			result.numberBase10[0] += 1;
-			std::cout << counterThis;
-			temp.print(" Remainder");
+			//result.numberBase10[0] += 1;
+			//std::cout << counterThis;
+			//temp.print(" Remainder");
 		}
 	}
-	temp.print("Remainder");
-	result.print("Result");
+	//temp.print("Remainder");
+	//result.print("Result");
 	this->copy(result);
 }
 
@@ -357,6 +357,7 @@ void BigInt::resetToZero() {
  * base 10 is easier to work with for the basic algorithms.
  */
 void BigInt::init(char* str) {
+	this->resetToZero();
 	int length = strlen(str);
 	if (strlen(str) > 150) {
 		throw "Value is too large. Maximum value is 32^100 \n";
