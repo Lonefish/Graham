@@ -45,8 +45,8 @@ BigInt BigInt::operator+(const BigInt& b) {
 	BigInt c;
 	for (int i = 0; i < this->lengthBase10; i++) {
 		c.numberBase10[i] = this->numberBase10[i] + b.numberBase10[i];
-		if(i < MAXLENGTH) {
-			c.numberBase10[i+1] = c.numberBase10[i] / 10;
+		if (i < MAXLENGTH) {
+			c.numberBase10[i + 1] = c.numberBase10[i] / 10;
 			c.numberBase10[i] = c.numberBase10[i] % 10;
 		}
 		//std::cout << this->number[i] << " - " << b.number[i] << "\n";
@@ -62,13 +62,15 @@ BigInt BigInt::operator+(const BigInt& b) {
  */
 void BigInt::add(const BigInt& b) {
 	//Check which number is the biggest, length of the loop based on the outcome
-	int length = (this->lengthBase10 > b.lengthBase10 ? this->lengthBase10 : b.lengthBase10);
+	int length = (
+			this->lengthBase10 > b.lengthBase10 ?
+					this->lengthBase10 : b.lengthBase10);
 	//for each digit, add the corresponding significant digit to the digit,
 	//if it's bigger than 10, add to the more significant digit and do modulo 10
 	for (int i = 0; i < length; i++) {
 		this->numberBase10[i] = this->numberBase10[i] + b.numberBase10[i];
-		if(i < MAXLENGTH) {
-			this->numberBase10[i+1] += this->numberBase10[i] / 10;
+		if (i < MAXLENGTH) {
+			this->numberBase10[i + 1] += this->numberBase10[i] / 10;
 			this->numberBase10[i] = this->numberBase10[i] % 10;
 		}
 	}
@@ -86,7 +88,7 @@ void BigInt::subtract(const BigInt& b) {
 	 * If the number to subtract is bigger, throw an error.
 	 * If the number is equal, the result will be 0, so reset 'this' and return
 	 */
-	if(compare == 2) {
+	if (compare == 2) {
 		throw "Number to subtract is too big. BigInt is not built for negative numbers";
 	} else if (compare == 0) {
 		this->init("0");
@@ -98,8 +100,8 @@ void BigInt::subtract(const BigInt& b) {
 	 * subtracting digit is bigger than the current digit, lend 10 from the more significant digit.
 	 */
 	for (int i = 0; i < this->lengthBase10; i++) {
-		if(this->numberBase10[i] < b.numberBase10[i]) {
-			this->numberBase10[i+1] -= 1;
+		if (this->numberBase10[i] < b.numberBase10[i]) {
+			this->numberBase10[i + 1] -= 1;
 			this->numberBase10[i] += 10;
 		}
 		this->numberBase10[i] -= b.numberBase10[i];
@@ -118,7 +120,8 @@ void BigInt::multiply(const BigInt& b) {
 	 */
 	for (int i = 0; i < this->lengthBase10; i++) {
 		for (int j = 0; j < b.lengthBase10; j++) {
-			temp.numberBase10[j+i] += this->numberBase10[i] * b.numberBase10[j];
+			temp.numberBase10[j + i] += this->numberBase10[i]
+					* b.numberBase10[j];
 		}
 	}
 
@@ -126,8 +129,8 @@ void BigInt::multiply(const BigInt& b) {
 	 * Normalises the array to base 10
 	 */
 	for (int i = 0; i < MAXLENGTH; i++) {
-		if(i < MAXLENGTH) {
-			temp.numberBase10[i+1] += temp.numberBase10[i] / 10;
+		if (i < MAXLENGTH) {
+			temp.numberBase10[i + 1] += temp.numberBase10[i] / 10;
 			temp.numberBase10[i] = temp.numberBase10[i] % 10;
 		}
 	}
@@ -144,8 +147,8 @@ void BigInt::multiply(const BigInt& b) {
  */
 void BigInt::shiftMoreSignificant(int addition) {
 	addition %= 10;
-	for(int i = MAXLENGTH -1; i > 0; i--) {
-		this->numberBase10[i] = this->numberBase10[i-1];
+	for (int i = MAXLENGTH - 1; i > 0; i--) {
+		this->numberBase10[i] = this->numberBase10[i - 1];
 	}
 	this->numberBase10[0] = addition;
 	this->lengthBase10++;
@@ -153,15 +156,13 @@ void BigInt::shiftMoreSignificant(int addition) {
 
 void BigInt::checkLength() {
 	//Check the new length of the number
-	for (int i = MAXLENGTH-1; i >= 0 ; i--) {
-		if(this->numberBase10[i] != 0) {
-			this->lengthBase10 = i+1;
+	for (int i = MAXLENGTH - 1; i >= 0; i--) {
+		if (this->numberBase10[i] != 0) {
+			this->lengthBase10 = i + 1;
 			return;
 		}
 	}
 }
-
-
 
 /*
  * Division algorithm
@@ -174,7 +175,7 @@ void BigInt::divide(const BigInt& b) {
 	 * If the number to divide is bigger, throw an error.
 	 * If the number is equal, the result will be 1, so set 'this' and return
 	 */
-	if(compare == 2) {
+	if (compare == 2) {
 		throw "Number to divide is too big. BigInt is not built for decimal numbers";
 	} else if (compare == 0) {
 		this->init("1");
@@ -182,6 +183,7 @@ void BigInt::divide(const BigInt& b) {
 	}
 	BigInt temp; //Contains the smallest number divisible by divisor
 	BigInt result; //Contains the result in opposite direction. Most significant digit = 0;
+	result.lengthBase10 = 1;
 	int counterResult = 0; //Contains counter for the position in the result
 	int counterThis = this->lengthBase10 - 1; //Contains counter for the position in 'this' bigint
 
@@ -191,7 +193,7 @@ void BigInt::divide(const BigInt& b) {
 	counterThis--;
 
 	//While the divisor is bigger than temp, add numbers.
-	while(temp.compare(b) == 2) {
+	while (temp.compare(b) == 2) {
 		temp.shiftMoreSignificant(this->numberBase10[counterThis]);
 		counterThis--;
 	}
@@ -205,37 +207,84 @@ void BigInt::divide(const BigInt& b) {
 	 * When temp is smaller than the divisor, add a number and
 	 * do it again.
 	 */
-	while(counterThis >= 0) {
+	while (counterThis >= 0) {
 		temp.subtract(b);
-		result.numberBase10[counterResult]++;
-		result.lengthBase10++;
-		counterResult++;
+		result.numberBase10[0] += 1;
 
 		temp.print("Temp ");
 		result.print("Result ");
-		std::cout << "counterThis" << counterThis << "\n";
-
+		std::cout << "counterThis :" << counterThis << "\n";
 
 		//When this BigInt is empty and subtraction is at an end, break loop
-		if(temp.compare(b) == 2 && counterThis == 0) {
+		if (temp.compare(b) == 2 && counterThis < 0) {
 			result.print("result finished");
 			break;
 		}
-		if(temp.compare(b) == 2) {
+		if (temp.compare(b) == 2) {
+			std::cout << "shift" << counterThis;
+			temp.print("Temp Shift");
+			result.print("Result Shift");
 			temp.shiftMoreSignificant(this->numberBase10[counterThis]);
+			result.shiftMoreSignificant(0);
 			counterThis--;
 		}
 	}
-
-	//Copy reverse of result to this and print the rest value.
-	this->copyReverse(result);
-
 	std::cout << "Division done, rest is";
 	temp.print("");
+	std::cout << "Division done, result is";
+	result.print("");
+	this->copy(result);
 	//checkLength();
 }
 
+/*
+ * Division algorithm
+ * Divide 'this' by 'b'
+ */
+void BigInt::divide2(const BigInt& b) {
+	int compare = this->compare(b);
 
+	/*
+	 * If the number to divide is bigger, throw an error.
+	 * If the number is equal, the result will be 1, so set 'this' and return
+	 */
+	if (compare == 2) {
+		throw "Number to divide is too big. BigInt is not built for decimal numbers";
+	} else if (compare == 0) {
+		this->init("1");
+		return;
+	}
+	BigInt temp; //Contains the smallest number divisible by divisor
+	BigInt result; //Contains the result in opposite direction. Most significant digit = 0;
+	result.lengthBase10 = 1;
+	int counterResult = 0; //Contains counter for the position in the result
+	int counterThis = this->lengthBase10 - 1; //Contains counter for the position in 'this' bigint
+
+	//While the divisor is bigger than temp, add numbers.
+	while (temp.compare(b) == 2) {
+		temp.shiftMoreSignificant(this->numberBase10[counterThis]);
+		counterThis--;
+	}
+
+	while (temp.compare(b) != 2) {
+		temp.subtract(b);
+		result.numberBase10[0] += 1;
+		//std::cout << "FirstSub";
+	}
+	while (counterThis >= 0) {
+		result.shiftMoreSignificant(0);
+		temp.shiftMoreSignificant(this->numberBase10[counterThis]);
+		counterThis--;
+		while (temp.compare(b) != 2) {
+			temp.subtract(b);
+			result.numberBase10[0] += 1;
+			std::cout << counterThis;
+		}
+	}
+	temp.print("Remainder");
+	result.print("Result");
+	this->copy(result);
+}
 
 /*
  * Comparing algorithm
@@ -244,18 +293,18 @@ void BigInt::divide(const BigInt& b) {
  * Returns 2 if the parameter object is bigger
  */
 int BigInt::compare(const BigInt& b) {
-	if(this->lengthBase10 > b.lengthBase10) {
+	if (this->lengthBase10 > b.lengthBase10) {
 		return 1;
-	} else if (this->lengthBase10 < b.lengthBase10){
+	} else if (this->lengthBase10 < b.lengthBase10) {
 		return 2;
 	} else {
 		//Starting a loop from the most significant digit.
 		//The length of "this" can be used because both lengths
 		//are equal at this stage
-		for(int i = this->lengthBase10; i >= 0; i--) {
-			if(this->numberBase10[i] > b.numberBase10[i]) {
+		for (int i = this->lengthBase10; i >= 0; i--) {
+			if (this->numberBase10[i] > b.numberBase10[i]) {
 				return 1;
-			} else if (this->numberBase10[i] < b.numberBase10[i]){
+			} else if (this->numberBase10[i] < b.numberBase10[i]) {
 				return 2;
 			}
 		}
@@ -263,7 +312,6 @@ int BigInt::compare(const BigInt& b) {
 	//if the function reaches this point both are equal
 	return 0;
 }
-
 
 /*
  *
@@ -302,7 +350,7 @@ void BigInt::init(char* str) {
 	for (int i = 0; i < length; i++) {
 		//check whether it's a number or not
 		int asci = str[i];
-		if(asci < 48 || asci > 57) {
+		if (asci < 48 || asci > 57) {
 			throw "NaN";
 		}
 		// - 0 because otherwise it will store the ASCII value
@@ -320,10 +368,10 @@ void BigInt::print(char* str) {
 	std::cout << "\n";
 
 	/*std::cout << "Base32Bit : ";
-	for (int i = 0; i < this->lengthBase32Bit; i++) {
-		std::cout << this->numberBase32Bit[i] << " ";
-	}
-	std::cout << "\n";*/
+	 for (int i = 0; i < this->lengthBase32Bit; i++) {
+	 std::cout << this->numberBase32Bit[i] << " ";
+	 }
+	 std::cout << "\n";*/
 }
 
 int BigInt::isDivisibleBy2() {
@@ -365,90 +413,90 @@ int BigInt::isDivisibleBy10() {
 
 //Probably buggy, focussing on base 2 first
 /*void BigInt::base2ToBase32Bit() {
-	long long quotient[150] = { }; //initial value is 0, most significant bit is 0.
-	int quotientCounter = 0; //keep track of the spot in the quotient, change in pointer?
-	bool quotientIsZero = true;
-	int number32bitcounter = 0; // keep track of where we are in the 32bitnumber array, change in pointer?
+ long long quotient[150] = { }; //initial value is 0, most significant bit is 0.
+ int quotientCounter = 0; //keep track of the spot in the quotient, change in pointer?
+ bool quotientIsZero = true;
+ int number32bitcounter = 0; // keep track of where we are in the 32bitnumber array, change in pointer?
 
-	//if length of the number is smaller than 2^32, it will always be only 1 'digit'
-	if (lengthBase2 < LENGTHBIT32 - 1) {
-		long long multiplier = 1; //multiply by 10 for each step
-		for (int i = 0; i < lengthBase2; i++) {
-			this->numberBase32Bit[0] += this->numberBase2[i] * multiplier;
-			multiplier *= 10;
-			lengthBase32Bit = 1;
-		}
-		return;
-	}
-	//initial division
-	long long dividend = 0;
-	long long multiplier = 1;
-	int quotientLength = 0; //length of the quotient
-	int whileCounter = 1; //needed to check where we are in the array, change in pointer?
+ //if length of the number is smaller than 2^32, it will always be only 1 'digit'
+ if (lengthBase2 < LENGTHBIT32 - 1) {
+ long long multiplier = 1; //multiply by 10 for each step
+ for (int i = 0; i < lengthBase2; i++) {
+ this->numberBase32Bit[0] += this->numberBase2[i] * multiplier;
+ multiplier *= 10;
+ lengthBase32Bit = 1;
+ }
+ return;
+ }
+ //initial division
+ long long dividend = 0;
+ long long multiplier = 1;
+ int quotientLength = 0; //length of the quotient
+ int whileCounter = 1; //needed to check where we are in the array, change in pointer?
 
-	//long long division of numberBase2
-	while (lengthBase2 - whileCounter >= 0) {
-		//form number in int
-		while (dividend < BIT32 && lengthBase2 >= whileCounter) {
-			dividend *= 10;
-			dividend += numberBase2[lengthBase2 - whileCounter];
-			whileCounter++;
-		}
-		quotient[quotientCounter] = dividend / BIT32;
+ //long long division of numberBase2
+ while (lengthBase2 - whileCounter >= 0) {
+ //form number in int
+ while (dividend < BIT32 && lengthBase2 >= whileCounter) {
+ dividend *= 10;
+ dividend += numberBase2[lengthBase2 - whileCounter];
+ whileCounter++;
+ }
+ quotient[quotientCounter] = dividend / BIT32;
 
-		//if not zero make sure it'll enter the loop
-		//else save the dividend, because this is the last value
-		if (quotient[quotientCounter] != 0) {
-			quotientIsZero = false;
-		} else {
+ //if not zero make sure it'll enter the loop
+ //else save the dividend, because this is the last value
+ if (quotient[quotientCounter] != 0) {
+ quotientIsZero = false;
+ } else {
 
-			numberBase32Bit[number32bitcounter] += dividend;
-			lengthBase32Bit = number32bitcounter + 1;
-			return;
-		}
-		quotientCounter++;
-		dividend = dividend % BIT32;
-	}
-	//form the quotient in base10 form for saving in number32bit array
-	multiplier = pow10(quotientCounter - 1);
-	quotientLength = quotientCounter + 1;
-	while (quotientCounter > 0) {
-		quotientCounter--;
-		numberBase32Bit[number32bitcounter] += quotient[quotientCounter]
-				* multiplier;
-		multiplier /= 10;
-	}
-	number32bitcounter++;
+ numberBase32Bit[number32bitcounter] += dividend;
+ lengthBase32Bit = number32bitcounter + 1;
+ return;
+ }
+ quotientCounter++;
+ dividend = dividend % BIT32;
+ }
+ //form the quotient in base10 form for saving in number32bit array
+ multiplier = pow10(quotientCounter - 1);
+ quotientLength = quotientCounter + 1;
+ while (quotientCounter > 0) {
+ quotientCounter--;
+ numberBase32Bit[number32bitcounter] += quotient[quotientCounter]
+ * multiplier;
+ multiplier /= 10;
+ }
+ number32bitcounter++;
 
-	//loop for next divisions
-	while (quotientIsZero != true) {
-		quotientIsZero = true;
-		whileCounter = 0;
-		multiplier = 1;
-		dividend = 0;
-		while (whileCounter < quotientLength) {
-			while (dividend < BIT32) {
-				dividend *= 10;
-				dividend += quotient[whileCounter];
-				whileCounter++;
-			}
-			quotient[quotientCounter] = dividend / BIT32;
-			if (quotient[quotientCounter] != 0) {
-				quotientIsZero = false;
-			}
-			quotientCounter++;
-		}
-		//form the quotient in base10 form for saving in number32bit array
-		multiplier = pow10(quotientCounter - 1);
-		while (quotientCounter >= 0) {
-			quotientCounter--;
-			numberBase32Bit[number32bitcounter] += quotient[quotientCounter]
-					* multiplier;
-			multiplier /= 10;
-			lengthBase32Bit = number32bitcounter + 1;
-		}
-		number32bitcounter++;
-	}
-}*/
+ //loop for next divisions
+ while (quotientIsZero != true) {
+ quotientIsZero = true;
+ whileCounter = 0;
+ multiplier = 1;
+ dividend = 0;
+ while (whileCounter < quotientLength) {
+ while (dividend < BIT32) {
+ dividend *= 10;
+ dividend += quotient[whileCounter];
+ whileCounter++;
+ }
+ quotient[quotientCounter] = dividend / BIT32;
+ if (quotient[quotientCounter] != 0) {
+ quotientIsZero = false;
+ }
+ quotientCounter++;
+ }
+ //form the quotient in base10 form for saving in number32bit array
+ multiplier = pow10(quotientCounter - 1);
+ while (quotientCounter >= 0) {
+ quotientCounter--;
+ numberBase32Bit[number32bitcounter] += quotient[quotientCounter]
+ * multiplier;
+ multiplier /= 10;
+ lengthBase32Bit = number32bitcounter + 1;
+ }
+ number32bitcounter++;
+ }
+ }*/
 
-} // END NAMESPACE GRAHAM
+}// END NAMESPACE GRAHAM

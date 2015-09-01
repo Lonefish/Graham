@@ -25,12 +25,13 @@ int main() {
 	Stopwatch s;
 	s.startClock();
 	Graham::BigInt z;
-	z.init("99");
+	z.init("11");
 	Graham::BigInt y;
-	y.init("1000");
+	y.init("9999");
 	z.print("z");
 	y.print("y");
-	y.divide(z);
+	y.divide2(z);
+
 	z.print("z");
 	y.print("y");
 	s.stopClock();

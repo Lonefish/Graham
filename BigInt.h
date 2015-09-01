@@ -30,6 +30,7 @@ public:
 	void checkLength();
 	void multiply(const BigInt& b);
 	void divide(const BigInt& b);
+	void divide2(const BigInt& b);
 	int compare(const BigInt& b);
 	virtual ~BigInt();
 	BigInt operator*(const BigInt& b);
