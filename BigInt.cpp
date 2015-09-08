@@ -9,6 +9,7 @@
 #include <iostream>
 #include <string.h>
 #include <tgmath.h>
+#include <unistd.h>
 
 namespace Graham {
 
@@ -74,8 +75,126 @@ void BigInt::add(const BigInt& b) {
 			this->numberBase10[i] = this->numberBase10[i] % 10;
 		}
 	}
-
 	checkLength();
+}
+
+void BigInt::power(int power) {
+	if (power == 0) {
+		this->init("1");
+		return;
+	}
+	if (power == 1) {
+		return;
+	}
+
+	BigInt original;
+	original.copy(*this);
+	for (int i = 1; i < power; i++) {
+		BigInt temp;
+		temp.init("0");
+		/*
+		 *Double loop that multiplies each digit with eachother and saves the result in an array
+		 */
+		for (int i = 0; i < this->lengthBase10; i++) {
+			for (int j = 0; j < this->lengthBase10; j++) {
+				temp.numberBase10[j + i] += this->numberBase10[i]
+						* original.numberBase10[j];
+			}
+		}
+		/*
+		 * Normalises the array to base 10
+		 */
+		for (int i = 0; i < MAXLENGTH; i++) {
+			if (i < MAXLENGTH) {
+				temp.numberBase10[i + 1] += temp.numberBase10[i] / 10;
+				temp.numberBase10[i] = temp.numberBase10[i] % 10;
+			}
+		}
+		temp.checkLength();
+		this->copy(temp);
+		//this->print("Print");
+	}
+}
+
+/*
+ * Specific function for calculating power towers
+ */
+void BigInt::powerModBigInt(const BigInt& power, int mod) {
+	if (power.compare(new BigInt("0"))) {
+		this->init("1");
+		return;
+	}
+	if (power == 1) {
+		return;
+	}
+
+	BigInt original;
+	original.copy(*this);
+	for (int i = 1; i < power; i++) {
+		BigInt temp;
+		temp.init("0");
+		/*
+		 *Double loop that multiplies each digit with eachother and saves the result in an array
+		 */
+		for (int i = 0; i < mod; i++) {
+			for (int j = 0; j < mod; j++) {
+				temp.numberBase10[j + i] += this->numberBase10[i]
+						* original.numberBase10[j];
+			}
+		}
+		/*
+		 * Normalises the array to base 10
+		 */
+		for (int i = 0; i < MAXLENGTH; i++) {
+			if (i < MAXLENGTH) {
+				temp.numberBase10[i + 1] += temp.numberBase10[i] / 10;
+				temp.numberBase10[i] = temp.numberBase10[i] % 10;
+			}
+		}
+		temp.checkLength();
+		this->copy(temp);
+		//this->print("Print");
+	}
+}
+/*
+ * Specific function for calculating power towers
+ */
+void BigInt::powerMod(int power, int mod) {
+	if (power == 0) {
+		this->init("1");
+		return;
+	}
+	if (power == 1) {
+		return;
+	}
+
+	BigInt original;
+	original.copy(*this);
+	for (int i = 1; i < power; i++) {
+		BigInt temp;
+		temp.init("0");
+		/*
+		 *Double loop that multiplies each digit with eachother and saves the result in an array
+		 */
+		for (int i = 0; i < mod; i++) {
+			for (int j = 0; j < mod; j++) {
+				temp.numberBase10[j + i] += this->numberBase10[i]
+						* original.numberBase10[j];
+			}
+		}
+		/*
+		 * Normalises the array to base 10
+		 */
+		for (int i = 0; i < MAXLENGTH; i++) {
+			if (i < MAXLENGTH) {
+				temp.numberBase10[i + 1] += temp.numberBase10[i] / 10;
+				temp.numberBase10[i] = temp.numberBase10[i] % 10;
+			}
+		}
+		temp.checkLength();
+		this->copy(temp);
+		//this->print("Print");
+	}
 }
 
 /*
@@ -124,7 +243,7 @@ void BigInt::multiply(const BigInt& b) {
 					* b.numberBase10[j];
 		}
 	}
-
+	//temp.print("TEMP");
 	/*
 	 * Normalises the array to base 10
 	 */
@@ -135,7 +254,8 @@ void BigInt::multiply(const BigInt& b) {
 		}
 	}
 
-	checkLength();
+	temp.checkLength();
+	this->copy(temp);
 }
 
 /*
@@ -267,11 +387,15 @@ void BigInt::divide2(const BigInt& b) {
 	}
 
 	while (temp.compare(b) != 2) {
+		std::cout << "lala";
 		temp.subtract(b);
 		result.numberBase10[0] += 1;
-		temp.print("Remainder first");
+		//temp.print("Remainder first");
 	}
+	std::cout << "first loop done";
 	while (counterThis >= 0) {
+		std::cout << counterThis;
+		usleep(100000);
 		result.shiftMoreSignificant(0);
 		temp.shiftMoreSignificant(this->numberBase10[counterThis]);
 		//temp.print("Temp");
@@ -279,8 +403,9 @@ void BigInt::divide2(const BigInt& b) {
 		counterThis--;
 		while (temp.compare(b) != 2) {
 			temp.subtract(b);
+			usleep(100000);
 			//result.numberBase10[0] += 1;
-			//std::cout << counterThis;
+			std::cout << counterThis;
 			//temp.print(" Remainder");
 		}
 	}

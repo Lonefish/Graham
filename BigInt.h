@@ -30,6 +30,9 @@ public:
 	void shiftMoreSignificant(int addition);
 	void checkLength();
 	void multiply(const BigInt& b);
+	void power(int power);
+	void powerMod(int power, int mod);
+	void powerModBigInt(const BigInt& power, int mod);
 	void divide(const BigInt& b);
 	void divide2(const BigInt& b);
 	int compare(const BigInt& b);
